@@ -2,6 +2,7 @@ import { userSchema } from '../../schemas/users/user.schema.js'
 import { User } from '../../models/user.js'
 import ConflictException from '../../exceptions/ConflictException.js'
 import BadRequesException from '../../exceptions/BadRequestException.js'
+import { statusCode } from '../../utils/enums/exceptions.js'
 
 async function createUserValidation(req, res, next) {
     const { name, email, password, role } = req.body
@@ -23,10 +24,12 @@ async function createUserValidation(req, res, next) {
             throw new ConflictException()
         }
     } catch (error) {
-        return res.status(error.status).json({
-            status: error.status,
-            message: error.message,
-        })
+        return res
+            .status(error.status || statusCode.INTERNAL_SERVER_ERROR)
+            .json({
+                status: error.status || statusCode.INTERNAL_SERVER_ERROR,
+                message: error.message || 'Something went wrong',
+            })
     }
 
     next()

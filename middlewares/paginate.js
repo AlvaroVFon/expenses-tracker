@@ -1,5 +1,15 @@
+import dotenv from 'dotenv'
+dotenv.config()
+
 function paginate(req, res, next) {
     const { page = 1, limit = 5 } = req.query
+
+    if (limit > process.env.RESOURCE_LIMIT) {
+        return res.status(400).json({
+            status: 400,
+            message: `Limit should not exceed ${process.env.RESOURCE_LIMIT}`,
+        })
+    }
 
     const skip = (page - 1) * limit
 

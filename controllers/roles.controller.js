@@ -1,27 +1,11 @@
-import { Role } from '../models/role.js'
-import { roleSchema } from '../schemas/roles/role.schema.js'
+import { roleService } from '../services/role.service.js'
+import { statusCode } from '../utils/enums/exceptions.js'
 
 async function create(req, res) {
     const { id, name } = req.body
 
-    const { error } = roleSchema.validate({ id, name })
-
-    if (error) {
-        return res.status(400).json({
-            message: error.message,
-        })
-    }
-
-    const role = new Role({ id, name })
-
     try {
-        const roleExists = await Role.findOne({ name })
-
-        if (roleExists) {
-            return res.status(400).json({
-                message: 'Role already exists',
-            })
-        }
+        const role = await roleService.create({ id, name })
 
         await role.save()
 
@@ -30,9 +14,12 @@ async function create(req, res) {
             role,
         })
     } catch (error) {
-        return res.status(400).json({
-            message: error,
-        })
+        return res
+            .status(error.status || statusCode.INTERNAL_SERVER_ERROR)
+            .json({
+                status: error.status || statusCode.INTERNAL_SERVER_ERROR,
+                message: error.message || 'Something went wrong',
+            })
     }
 }
 
@@ -40,27 +27,41 @@ async function findAll(req, res) {
     const { page, limit, skip } = req.pagination
 
     try {
-        const totalRoles = await Role.countDocuments()
-
-        const totalPages =
-            Math.ceil(totalRoles / limit) === 0
-                ? 1
-                : Math.ceil(totalRoles / limit)
-
-        const roles = await Role.find().limit(limit).skip(skip)
+        const { data, totalPages } = await roleService.findAll({ limit, skip })
 
         res.json({
-            data: roles,
+            data: data,
             page: parseInt(page),
             limit,
             totalPages,
         })
     } catch (error) {
-        res.status(500).json({
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({
             message: 'Error retrieving roles',
             error,
         })
     }
 }
 
-export { create, findAll }
+async function findOne(req, res) {
+    const { id } = req.params
+
+    try {
+        const role = await roleService.findOne({ id })
+
+        if (!role) {
+            return res.status(404).json({
+                message: 'Role not found',
+            })
+        }
+
+        res.json(role)
+    } catch (error) {
+        res.status(error.status || statusCode.INTERNAL_SERVER_ERROR).json({
+            status: error.status || statusCode.INTERNAL_SERVER_ERROR,
+            message: error.message || 'Error retrieving role',
+        })
+    }
+}
+
+export { create, findAll, findOne }

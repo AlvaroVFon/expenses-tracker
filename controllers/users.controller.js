@@ -1,6 +1,7 @@
 import { User } from '../models/user.js'
 import NotFoundException from '../exceptions/NotFoundException.js'
 import { userService } from '../services/users.service.js'
+import { statusCode } from '../utils/enums/exceptions.js'
 
 async function PostUser(req, res) {
     const { name, email, password, role } = req.body
@@ -10,7 +11,7 @@ async function PostUser(req, res) {
 
         return res.status(201).json({
             message: 'User created',
-            user: user.toPublicObject(),
+            user: User.toPublicObject(user),
         })
     } catch (error) {
         return error
@@ -30,7 +31,7 @@ async function getAll(req, res) {
         })
 
         return res.json({
-            data: data.map((user) => user.toPublicObject()),
+            data: data.map((user) => User.toPublicObject(user)),
             page: parseInt(page),
             limit,
             totalPages,
@@ -55,9 +56,12 @@ async function getOne(req, res) {
         })
     } catch (error) {
         console.log(error)
-        return res.status(error.status).json({
-            message: error.message,
-        })
+        return res
+            .status(error.status || statusCode.INTERNAL_SERVER_ERROR)
+            .json({
+                status: error.status,
+                message: error.message || 'Error retrieving user',
+            })
     }
 }
 
@@ -68,14 +72,20 @@ async function updateUser(req, res) {
 
     req.body.updatedAt = new Date()
 
-    await User.findByIdAndUpdate(id, body)
-
-    const updatedUser = await User.findById(id)
-
-    return res.json({
-        message: 'User updated',
-        user: updatedUser.toPublicObject(),
-    })
+    try {
+        userService.update(id, body)
+        return res.json({
+            status: 200,
+            message: 'User updated',
+        })
+    } catch (error) {
+        return res
+            .status(error.status || statusCode.INTERNAL_SERVER_ERROR)
+            .json({
+                status: error.status || statusCode.INTERNAL_SERVER_ERROR,
+                message: error.message || 'Error updating user',
+            })
+    }
 }
 
 async function remove(req, res) {

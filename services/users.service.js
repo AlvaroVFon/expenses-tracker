@@ -15,12 +15,6 @@ export class UserService {
 
         try {
             await user.save()
-            await redis.set(
-                user._id.toString(),
-                JSON.stringify(user),
-                'EX',
-                3600
-            )
             return user
         } catch (error) {
             throw new Error(error)
@@ -48,15 +42,32 @@ export class UserService {
             throw new BadRequesException('Invalid ID')
         }
 
-        const redisUser = await redis.get(id)
+        try {
+            const cachedUser = await redis.get(id)
 
-        if (redisUser) {
-            return JSON.parse(redisUser)
+            if (cachedUser) {
+                return JSON.parse(cachedUser)
+            }
+
+            const user = await User.findById(id)
+
+            if (user) {
+                redis.set(user._id.toString(), JSON.stringify(user), 'EX', 1800)
+            }
+
+            return user
+        } catch (error) {
+            throw new Error(error)
         }
+    }
+    async update(id, data) {
+        try {
+            const user = await User.findByIdAndUpdate(id, data)
 
-        const user = await User.findById(id)
-
-        return user
+            console.log(user)
+        } catch (error) {
+            console.log(error)
+        }
     }
 }
 

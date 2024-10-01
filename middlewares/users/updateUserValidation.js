@@ -3,6 +3,7 @@ import { User } from '../../models/user.js'
 import BadRequestException from '../../exceptions/BadRequestException.js'
 import NotFoundException from '../../exceptions/NotFoundException.js'
 import { ObjectId } from 'mongodb'
+import { hashPassword } from '../../helpers/hashPassword.js'
 
 async function updateUserValidation(req, res, next) {
     const { id } = req.params
@@ -15,6 +16,10 @@ async function updateUserValidation(req, res, next) {
         }
 
         const { error } = updateUserSchema.validate(body)
+
+        if (req.body.password) {
+            body.password = await hashPassword(req.body.password)
+        }
 
         if (error) {
             throw new BadRequestException(error.message)

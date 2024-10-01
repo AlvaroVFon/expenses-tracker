@@ -1,6 +1,8 @@
 import Joi from 'joi'
+import { rolesEnum } from '../../utils/enums/roles.js'
 
 export const roleSchema = Joi.object({
-    id: Joi.number().required(),
-    name: Joi.string().required(),
+    name: Joi.string()
+        .required()
+        .valid(...Object.values(rolesEnum)),
 })
