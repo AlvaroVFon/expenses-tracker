@@ -1,33 +1,31 @@
 import { userSchema } from '../../schemas/users/user.schema.js'
 import { User } from '../../models/user.js'
+import ConflictException from '../../exceptions/ConflictException.js'
+import BadRequesException from '../../exceptions/BadRequestException.js'
 
 async function createUserValidation(req, res, next) {
     const { name, email, password, role } = req.body
 
-    const { error } = userSchema.validate({
-        name,
-        email,
-        password,
-        role,
-    })
-
-    if (error) {
-        return res.status(400).json({
-            message: error.message,
-        })
-    }
-
     try {
+        const { error } = userSchema.validate({
+            name,
+            email,
+            password,
+            role,
+        })
+        if (error) {
+            throw new BadRequesException(error.message)
+        }
+
         const userExists = await User.findOne({ email })
 
         if (userExists) {
-            return res.status(400).json({
-                message: 'User already exists',
-            })
+            throw new ConflictException()
         }
     } catch (error) {
-        return res.status(400).json({
-            message: error,
+        return res.status(error.status).json({
+            status: error.status,
+            message: error.message,
         })
     }
 

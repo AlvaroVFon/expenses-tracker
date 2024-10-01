@@ -8,7 +8,7 @@ import { rolesRouter } from '../routes/roles.route.js'
 config()
 
 class Server {
-    port = process.env.SERVER_PORT //eslint-disable-line
+    port = process.env.SERVER_PORT
 
     constructor() {
         this.app = express()
@@ -28,7 +28,7 @@ class Server {
         this.app.use(cors())
     }
 
-    database() {
+    async database() {
         databaseConnection()
     }
 

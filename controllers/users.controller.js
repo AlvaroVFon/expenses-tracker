@@ -1,95 +1,80 @@
 import { User } from '../models/user.js'
-import { hashPassword } from '../helpers/hashPassword.js'
+import NotFoundException from '../exceptions/NotFoundException.js'
+import { userService } from '../services/users.service.js'
 
-async function create(req, res) {
+async function PostUser(req, res) {
     const { name, email, password, role } = req.body
 
-    const user = new User({
-        name,
-        email,
-        password: await hashPassword(password),
-        role,
-    })
-
     try {
-        await user.save()
+        const user = await userService.create({ name, email, password, role })
 
         return res.status(201).json({
             message: 'User created',
             user: user.toPublicObject(),
         })
     } catch (error) {
-        return res.status(400).json({
-            message: error,
-        })
+        return error
     }
 }
 
-async function findAll(req, res) {
-    const { page, limit, skip } = req.pagination
+async function getAll(req, res) {
+    const { page, limit } = req.pagination
+
+    const skip = (page - 1) * limit
 
     try {
-        const totalUsers = await User.countDocuments()
-
-        const totalPages =
-            Math.ceil(totalUsers / limit) === 0
-                ? 1
-                : Math.ceil(totalUsers / limit)
-
-        const users = await User.find()
-            .limit(limit * 1)
-            .skip(skip)
+        const { data, totalPages } = await userService.findAll({
+            page,
+            limit,
+            skip,
+        })
 
         return res.json({
-            data: users.map((user) => user.toPublicObject()),
+            data: data.map((user) => user.toPublicObject()),
             page: parseInt(page),
             limit,
             totalPages,
         })
     } catch (error) {
-        return res.status(500).json({
-            message: 'Error retrieving users',
-            error,
-        })
+        return error
     }
 }
 
-async function findOne(req, res) {
+async function getOne(req, res) {
     const { id } = req.params
 
     try {
-        const user = await User.findById(id)
+        const user = await userService.findOne({ id })
 
         if (!user) {
-            res.status(404).json({
-                message: 'User not found',
-            })
+            throw new NotFoundException('User not found')
         }
 
         return res.json({
-            data: 'Get one user',
-            user,
+            user: User.toPublicObject(user),
         })
     } catch (error) {
-        return res.status(500).json({
-            message: 'Error retrieving user',
-            error,
+        console.log(error)
+        return res.status(error.status).json({
+            message: error.message,
         })
     }
 }
 
-async function update(req, res) {
+async function updateUser(req, res) {
     const { id } = req.params
 
     const body = req.body
 
     req.body.updatedAt = new Date()
 
-    const user = await User.findByIdAndUpdate(id, body)
+    await User.findByIdAndUpdate(id, body)
+
+    const updatedUser = await User.findById(id)
 
     return res.json({
         message: 'User updated',
-        user,
+        user: updatedUser.toPublicObject(),
     })
 }
 
@@ -103,4 +88,4 @@ async function remove(req, res) {
         user,
     })
 }
-export { findAll, findOne, create, update, remove }
+export { getAll, getOne, PostUser, updateUser, remove }

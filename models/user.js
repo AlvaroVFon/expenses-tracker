@@ -37,13 +37,13 @@ const userSchema = new Schema(
         },
     },
     {
-        methods: {
-            toPublicObject() {
+        statics: {
+            toPublicObject(user) {
                 return {
-                    id: this._id,
-                    name: this.name,
-                    email: this.email,
-                    role: this.role,
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
                 }
             },
         },

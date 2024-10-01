@@ -1,5 +1,5 @@
 import Joi from 'joi'
-import { rolesEnum } from '../../helpers/rolesEnum.js'
+import { rolesEnum } from '../../utils/enums/roles.js'
 
 export const updateUserSchema = Joi.object({
     name: Joi.string().min(3).max(30),

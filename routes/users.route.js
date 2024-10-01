@@ -1,9 +1,10 @@
 import { Router } from 'express'
+
 import {
-    create,
-    findAll,
-    findOne,
-    update,
+    PostUser,
+    getAll,
+    getOne,
+    updateUser,
     remove,
 } from '../controllers/users.controller.js'
 import { createUserValidation } from '../middlewares/users/createUserValidation.js'
@@ -13,10 +14,10 @@ import { paginate } from '../middlewares/paginate.js'
 const router = Router()
 
 router
-    .post('/users', createUserValidation, create)
-    .get('/users', paginate, findAll)
-    .get('/users/:id', findOne)
-    .patch('/users/:id', updateUserValidation, update)
+    .post('/users', createUserValidation, PostUser)
+    .get('/users', paginate, getAll)
+    .get('/users/:id', getOne)
+    .patch('/users/:id', updateUserValidation, updateUser)
     .delete('/users/:id', remove)
 
 export { router as userRouter }

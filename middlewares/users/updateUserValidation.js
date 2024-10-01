@@ -1,30 +1,34 @@
 import { updateUserSchema } from '../../schemas/users/updateUser.schema.js'
 import { User } from '../../models/user.js'
+import BadRequestException from '../../exceptions/BadRequestException.js'
+import NotFoundException from '../../exceptions/NotFoundException.js'
+import { ObjectId } from 'mongodb'
 
 async function updateUserValidation(req, res, next) {
     const { id } = req.params
 
     const body = req.body
 
-    const { error } = updateUserSchema.validate(body)
-
-    if (error) {
-        return res.status(400).json({
-            message: error.message,
-        })
-    }
-
     try {
+        if (!ObjectId.isValid(id)) {
+            throw new BadRequestException('Invalid id')
+        }
+
+        const { error } = updateUserSchema.validate(body)
+
+        if (error) {
+            throw new BadRequestException(error.message)
+        }
+
         const userExists = await User.findById(id)
 
         if (!userExists) {
-            return res.status(404).json({
-                message: 'User not found',
-            })
+            throw new NotFoundException()
         }
     } catch (error) {
-        return res.status(400).json({
-            message: error,
+        return res.status(error.status).json({
+            status: error.status,
+            message: error.message,
         })
     }
 
