@@ -9,10 +9,10 @@ import HttpException from './HttpException.js'
  * @param {string} message - The error message
  
  */
-class BadRequesException extends HttpException {
+class BadRequestException extends HttpException {
     constructor(message = exceptions.BAD_REQUEST) {
         super(statusCode.BAD_REQUEST, message)
     }
 }
 
-export default BadRequesException
+export default BadRequestException

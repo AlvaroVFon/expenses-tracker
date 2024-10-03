@@ -2,8 +2,9 @@ import { User } from '../models/user.js'
 import NotFoundException from '../exceptions/NotFoundException.js'
 import { userService } from '../services/users.service.js'
 import { statusCode } from '../utils/enums/exceptions.js'
+import { handleError } from '../helpers/handleError.js'
 
-async function PostUser(req, res) {
+async function create(req, res) {
     const { name, email, password, role } = req.body
 
     try {
@@ -18,7 +19,7 @@ async function PostUser(req, res) {
     }
 }
 
-async function getAll(req, res) {
+async function findAll(req, res) {
     const { page, limit } = req.pagination
 
     const skip = (page - 1) * limit
@@ -41,7 +42,7 @@ async function getAll(req, res) {
     }
 }
 
-async function getOne(req, res) {
+async function findOne(req, res) {
     const { id } = req.params
 
     try {
@@ -55,7 +56,6 @@ async function getOne(req, res) {
             user: User.toPublicObject(user),
         })
     } catch (error) {
-        console.log(error)
         return res
             .status(error.status || statusCode.INTERNAL_SERVER_ERROR)
             .json({
@@ -65,7 +65,7 @@ async function getOne(req, res) {
     }
 }
 
-async function updateUser(req, res) {
+async function update(req, res) {
     const { id } = req.params
 
     const body = req.body
@@ -91,11 +91,30 @@ async function updateUser(req, res) {
 async function remove(req, res) {
     const { id } = req.params
 
-    const user = await User.findByIdAndDelete(id)
+    try {
+        const user = await userService.remove(id)
 
-    return res.json({
-        message: 'User deleted',
-        user,
-    })
+        return res.json({
+            message: 'User deleted',
+            user,
+        })
+    } catch (error) {
+        handleError(res, error)
+    }
 }
-export { getAll, getOne, PostUser, updateUser, remove }
+
+async function restore(req, res) {
+    const { id } = req.params
+
+    try {
+        const user = await userService.restore(id)
+
+        return res.json({
+            message: 'User restored',
+            user,
+        })
+    } catch (error) {
+        handleError(res, error)
+    }
+}
+export { findAll, findOne, create, update, remove, restore }

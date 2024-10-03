@@ -1,15 +1,17 @@
 import { userService } from '../../services/users.service.js'
 import { User } from '../../models/user.js'
+import { users } from '../factories/users.factory.js'
 
-async function seedUsers(users) {
+async function seedUsers() {
     try {
         await clearUsers()
 
-        for (const user of users) {
+        const createUsers = users.map(async (user) => {
             await userService.create(user)
-
             console.log(`User ${user.name} created`)
-        }
+        })
+
+        await Promise.all(createUsers)
     } catch (error) {
         console.error(error)
     }

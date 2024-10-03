@@ -1,14 +1,19 @@
-import { users } from '../factories/users.factory.js'
-import { roles } from '../factories/role.factory.js'
 import { seedUsers } from './users.seed.js'
 import { seedRoles } from './roles.seed.js'
 import { databaseConnection } from '../../database/config.js'
 
-async function seed() {
+/**
+ *Clears the database and seeds it with the seeders provided
+ *
+ * @param {*} databaseConnection - Connection to the database
+ * @param {*} seeders - Array of seeders
+ */
+
+async function seed(databaseConnection, seeders) {
     try {
         await databaseConnection()
-        await seedUsers(users)
-        await seedRoles(roles)
+
+        await Promise.all(seeders.map((seeder) => seeder()))
 
         process.exit(0)
     } catch (error) {
@@ -17,6 +22,6 @@ async function seed() {
     }
 }
 
-seed()
+seed(databaseConnection, [seedRoles, seedUsers])
 
 export { seed }

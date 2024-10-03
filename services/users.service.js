@@ -1,8 +1,10 @@
-import BadRequesException from '../exceptions/BadRequestException.js'
+import BadRequestException from '../exceptions/BadRequestException.js'
 import { hashPassword } from '../helpers/hashPassword.js'
 import { User } from '../models/user.js'
 import { ObjectId } from 'mongodb'
 import { redis } from '../database/redis.js'
+import { Logger } from '../models/logger.js'
+import NotFoundException from '../exceptions/NotFoundException.js'
 
 export class UserService {
     async create({ name, email, password, role }) {
@@ -17,7 +19,8 @@ export class UserService {
             await user.save()
             return user
         } catch (error) {
-            throw new Error(error)
+            Logger.error(error.message, error.stack)
+            throw error
         }
     }
 
@@ -39,34 +42,55 @@ export class UserService {
 
     async findOne({ id }) {
         if (ObjectId.isValid(id) === false) {
-            throw new BadRequesException('Invalid ID')
+            throw new BadRequestException('Invalid ID')
         }
 
-        try {
-            const cachedUser = await redis.get(id)
+        const redisUser = await redis.get(id)
 
-            if (cachedUser) {
-                return JSON.parse(cachedUser)
-            }
-
-            const user = await User.findById(id)
-
-            if (user) {
-                redis.set(user._id.toString(), JSON.stringify(user), 'EX', 1800)
-            }
-
-            return user
-        } catch (error) {
-            throw new Error(error)
+        if (redisUser) {
+            return JSON.parse(redisUser)
         }
+
+        const user = await User.findOne({ _id: id, deletedAt: null })
+
+        if (user) {
+            redis.set(user._id.toString(), JSON.stringify(user), 'EX', 1800)
+        }
+
+        return user
     }
-    async update(id, data) {
-        try {
-            const user = await User.findByIdAndUpdate(id, data)
 
-            console.log(user)
-        } catch (error) {
-            console.log(error)
+    async findOnebyEmail(email) {
+        const user = User.findOne({
+            email: email,
+        })
+
+        return user
+    }
+
+    async update(id, data) {
+        return await User.findByIdAndUpdate(id, data)
+    }
+
+    async remove(id) {
+        const user = await User.findOneAndUpdate(
+            { _id: id, deletedAt: null },
+            {
+                deletedAt: new Date(),
+            }
+        )
+
+        if (!user) {
+            throw new NotFoundException('User not found')
+        }
+
+        return user
+    }
+
+    async restore(id) {
+        const user = await User.findByIdAndUpdate(id, { deletedAt: null })
+        if (!user) {
+            throw NotFoundException('User not found')
         }
     }
 }

@@ -5,6 +5,7 @@ import { router } from '../routes/index.route.js'
 import { userRouter } from '../routes/users.route.js'
 import { databaseConnection } from '../database/config.js'
 import { rolesRouter } from '../routes/roles.route.js'
+import { AuthRouter } from '../routes/auth.route.js'
 config()
 
 class Server {
@@ -34,6 +35,7 @@ class Server {
 
     routes() {
         this.app.use(router)
+        this.app.use(AuthRouter)
         this.app.use(userRouter)
         this.app.use(rolesRouter)
     }

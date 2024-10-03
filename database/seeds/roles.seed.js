@@ -1,15 +1,17 @@
 import { roleService } from '../../services/role.service.js'
 import { Role } from '../../models/role.js'
+import { roles } from '../factories/role.factory.js'
 
-async function seedRoles(roles) {
+async function seedRoles() {
     try {
         await clearRoles()
 
-        for (const role of roles) {
+        const createRoles = roles.map(async (role) => {
             await roleService.create(role)
-
             console.log(`Role ${role.name} created`)
-        }
+        })
+
+        await Promise.all(createRoles)
     } catch (error) {
         console.error(error)
     }
