@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose'
 
 export const RoleSchema = new Schema({
   name: {
@@ -6,8 +6,8 @@ export const RoleSchema = new Schema({
     required: true,
     unique: true,
   },
-});
+})
 
-const Role = model("Role", RoleSchema);
+const Role = model('Role', RoleSchema)
 
-export { Role };
+export { Role }

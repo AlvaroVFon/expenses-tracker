@@ -9,10 +9,10 @@
 
 class HttpException extends Error {
   constructor(status, message) {
-    super(message);
-    this.status = status;
-    this.message = message;
+    super(message)
+    this.status = status
+    this.message = message
   }
 }
 
-export default HttpException;
+export default HttpException

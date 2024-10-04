@@ -1,14 +1,14 @@
-import { performance } from "node:perf_hooks";
+import { performance } from 'node:perf_hooks'
 
 async function measurePerformance(fn) {
-  const start = performance.now();
-  const result = await fn();
-  const end = performance.now();
+  const start = performance.now()
+  const result = await fn()
+  const end = performance.now()
 
   return {
     result,
     time: end - start,
-  };
+  }
 }
 
-export { measurePerformance };
+export { measurePerformance }

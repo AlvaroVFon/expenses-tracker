@@ -1,5 +1,5 @@
-import { exceptions, statusCode } from "../utils/enums/exceptions.js";
-import HttpException from "./HttpException.js";
+import { exceptions, statusCode } from '../utils/enums/exceptions.js'
+import HttpException from './HttpException.js'
 
 /**
  * This class extends the HttpException class and is used to throw
@@ -11,8 +11,8 @@ import HttpException from "./HttpException.js";
  */
 class BadRequestException extends HttpException {
   constructor(message = exceptions.BAD_REQUEST) {
-    super(statusCode.BAD_REQUEST, message);
+    super(statusCode.BAD_REQUEST, message)
   }
 }
 
-export default BadRequestException;
+export default BadRequestException

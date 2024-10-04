@@ -1,5 +1,5 @@
-import { Schema, model } from "mongoose";
-import { logLevels } from "../utils/enums/logLevels.js";
+import { Schema, model } from 'mongoose'
+import { logLevels } from '../utils/enums/logLevels.js'
 
 const loggerSchema = new Schema(
   {
@@ -27,7 +27,7 @@ const loggerSchema = new Schema(
           level: logLevels.INFO,
           timestamp: new Date(),
           stack,
-        });
+        })
       },
       error(message, stack = null) {
         return this.create({
@@ -35,7 +35,7 @@ const loggerSchema = new Schema(
           level: logLevels.ERROR,
           timestamp: new Date(),
           stack,
-        });
+        })
       },
       warn(message, stack = null) {
         return this.create({
@@ -43,7 +43,7 @@ const loggerSchema = new Schema(
           level: logLevels.WARN,
           timestamp: new Date(),
           stack,
-        });
+        })
       },
       debug(message, stack = null) {
         return this.create({
@@ -51,18 +51,18 @@ const loggerSchema = new Schema(
           level: logLevels.DEBUG,
           timestamp: new Date(),
           stack,
-        });
+        })
       },
     },
 
     methods: {
       getErrors() {
-        this.find({ level: logLevels.ERROR });
+        this.find({ level: logLevels.ERROR })
       },
     },
   },
-);
+)
 
-const Logger = model("Log", loggerSchema);
+const Logger = model('Log', loggerSchema)
 
-export { Logger };
+export { Logger }

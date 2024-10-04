@@ -1,6 +1,6 @@
-import { seedUsers } from "./users.seed.js";
-import { seedRoles } from "./roles.seed.js";
-import { databaseConnection } from "../../database/config.js";
+import { seedUsers } from './users.seed.js'
+import { seedRoles } from './roles.seed.js'
+import { databaseConnection } from '../../database/config.js'
 
 /**
  *Clears the database and seeds it with the seeders provided
@@ -11,17 +11,17 @@ import { databaseConnection } from "../../database/config.js";
 
 async function seed(databaseConnection, seeders) {
   try {
-    await databaseConnection();
+    await databaseConnection()
 
-    await Promise.all(seeders.map((seeder) => seeder()));
+    await Promise.all(seeders.map((seeder) => seeder()))
 
-    process.exit(0);
+    process.exit(0)
   } catch (error) {
-    console.error(error);
-    process.exit(1);
+    console.error(error)
+    process.exit(1)
   }
 }
 
-seed(databaseConnection, [seedRoles, seedUsers]);
+seed(databaseConnection, [seedRoles, seedUsers])
 
-export { seed };
+export { seed }

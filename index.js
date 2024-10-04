@@ -1,7 +1,7 @@
-import { server } from "./models/server.js";
+import { server } from './models/server.js'
 
 async function main() {
-  server.start();
+  server.start()
 }
 
-main();
+main()

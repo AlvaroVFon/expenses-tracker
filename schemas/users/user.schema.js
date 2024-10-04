@@ -1,5 +1,5 @@
-import Joi from "joi";
-import { rolesEnum } from "../../utils/enums/roles.js";
+import Joi from 'joi'
+import { rolesEnum } from '../../utils/enums/roles.js'
 
 export const userSchema = Joi.object({
   name: Joi.string().required(),
@@ -11,4 +11,4 @@ export const userSchema = Joi.object({
   role: Joi.string()
     .valid(...Object.values(rolesEnum))
     .required(),
-});
+})

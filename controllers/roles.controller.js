@@ -1,65 +1,65 @@
-import { roleService } from "../services/role.service.js";
-import { statusCode } from "../utils/enums/exceptions.js";
+import { roleService } from '../services/role.service.js'
+import { statusCode } from '../utils/enums/exceptions.js'
 
 async function create(req, res) {
-  const { id, name } = req.body;
+  const { id, name } = req.body
 
   try {
-    const role = await roleService.create({ id, name });
+    const role = await roleService.create({ id, name })
 
-    await role.save();
+    await role.save()
 
     res.status(201).json({
-      message: "Role created",
+      message: 'Role created',
       role,
-    });
+    })
   } catch (error) {
     return res.status(error.status || statusCode.INTERNAL_SERVER_ERROR).json({
       status: error.status || statusCode.INTERNAL_SERVER_ERROR,
-      message: error.message || "Something went wrong",
-    });
+      message: error.message || 'Something went wrong',
+    })
   }
 }
 
 async function findAll(req, res) {
-  const { page, limit, skip } = req.pagination;
+  const { page, limit, skip } = req.pagination
 
   try {
-    const { data, totalPages } = await roleService.findAll({ limit, skip });
+    const { data, totalPages } = await roleService.findAll({ limit, skip })
 
     res.json({
       data: data,
       page: parseInt(page),
       limit,
       totalPages,
-    });
+    })
   } catch (error) {
     res.status(statusCode.INTERNAL_SERVER_ERROR).json({
-      message: "Error retrieving roles",
+      message: 'Error retrieving roles',
       error,
-    });
+    })
   }
 }
 
 async function findOne(req, res) {
-  const { id } = req.params;
+  const { id } = req.params
 
   try {
-    const role = await roleService.findOne({ id });
+    const role = await roleService.findOne({ id })
 
     if (!role) {
       return res.status(404).json({
-        message: "Role not found",
-      });
+        message: 'Role not found',
+      })
     }
 
-    res.json(role);
+    res.json(role)
   } catch (error) {
     res.status(error.status || statusCode.INTERNAL_SERVER_ERROR).json({
       status: error.status || statusCode.INTERNAL_SERVER_ERROR,
-      message: error.message || "Error retrieving role",
-    });
+      message: error.message || 'Error retrieving role',
+    })
   }
 }
 
-export { create, findAll, findOne };
+export { create, findAll, findOne }

@@ -1,5 +1,5 @@
-import { exceptions, statusCode } from "../utils/enums/exceptions.js";
-import HttpException from "./HttpException.js";
+import { exceptions, statusCode } from '../utils/enums/exceptions.js'
+import HttpException from './HttpException.js'
 
 /**
  * This class extends the HttpException class and is used to throw
@@ -10,8 +10,8 @@ import HttpException from "./HttpException.js";
  */
 class ConflictException extends HttpException {
   constructor(message = exceptions.CONFLICT) {
-    super(statusCode.CONFLICT, message);
+    super(statusCode.CONFLICT, message)
   }
 }
 
-export default ConflictException;
+export default ConflictException
