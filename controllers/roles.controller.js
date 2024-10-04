@@ -1,5 +1,6 @@
 import { roleService } from '../services/role.service.js'
 import { statusCode } from '../utils/enums/exceptions.js'
+import { handleError } from '../helpers/handleError.js'
 
 async function create(req, res) {
   const { id, name } = req.body
@@ -62,4 +63,20 @@ async function findOne(req, res) {
   }
 }
 
-export { create, findAll, findOne }
+async function update(req, res) {
+  try {
+    const { id } = req.params
+    const { name } = req.body
+
+    await roleService.update(id, name)
+
+    res.json({
+      status: 200,
+      message: 'Role updated',
+    })
+  } catch (error) {
+    handleError(res, error)
+  }
+}
+
+export { create, findAll, findOne, update }

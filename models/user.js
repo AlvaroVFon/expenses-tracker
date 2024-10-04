@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose'
 import { redis } from '../database/redis.js'
 import { Logger } from './logger.js'
+import { rolesEnum } from '../utils/enums/roles.js'
 
 const userSchema = new Schema(
   {
@@ -33,7 +34,7 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ['superadmin', 'admin', 'user'],
+      enum: rolesEnum,
       ref: 'Role',
       required: true,
     },

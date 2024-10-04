@@ -1,6 +1,7 @@
 import { Role } from '../models/role.js'
 import BadRequesException from '../exceptions/BadRequestException.js'
 import { isObjectIdOrHexString } from 'mongoose'
+import NotFoundException from '../exceptions/NotFoundException.js'
 
 export class RoleService {
   async create({ name }) {
@@ -39,25 +40,14 @@ export class RoleService {
     return role
   }
 
-  async update({ id, name }) {
-    if (isObjectIdOrHexString(id) === false) {
-      throw new BadRequesException('Invalid ID')
-    }
-
-    const role = await Role.findById(id)
+  async update(id, name) {
+    const role = await Role.findOneAndUpdate({ _id: id }, { name })
 
     if (!role) {
-      throw new BadRequesException('Role not found')
+      throw new NotFoundException('Role not found')
     }
 
-    role.name = name
-
-    try {
-      await role.save()
-      return role
-    } catch (error) {
-      throw new Error(error)
-    }
+    return role
   }
 }
 
