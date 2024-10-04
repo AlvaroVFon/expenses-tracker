@@ -1,120 +1,120 @@
-import { User } from '../models/user.js'
-import NotFoundException from '../exceptions/NotFoundException.js'
-import { userService } from '../services/users.service.js'
-import { statusCode } from '../utils/enums/exceptions.js'
-import { handleError } from '../helpers/handleError.js'
+import { User } from "../models/user.js";
+import NotFoundException from "../exceptions/NotFoundException.js";
+import { userService } from "../services/users.service.js";
+import { statusCode } from "../utils/enums/exceptions.js";
+import { handleError } from "../helpers/handleError.js";
 
 async function create(req, res) {
-    const { name, email, password, role } = req.body
+  const { name, email, password, role } = req.body;
 
-    try {
-        const user = await userService.create({ name, email, password, role })
+  try {
+    const user = await userService.create({ name, email, password, role });
 
-        return res.status(201).json({
-            message: 'User created',
-            user: User.toPublicObject(user),
-        })
-    } catch (error) {
-        return error
-    }
+    return res.status(201).json({
+      message: "User created",
+      user: User.toPublicObject(user),
+    });
+  } catch (error) {
+    return error;
+  }
 }
 
 async function findAll(req, res) {
-    const { page, limit } = req.pagination
+  const { page, limit } = req.pagination;
 
-    const skip = (page - 1) * limit
+  const skip = (page - 1) * limit;
 
-    try {
-        const { data, totalPages } = await userService.findAll({
-            page,
-            limit,
-            skip,
-        })
+  try {
+    const { data, totalPages } = await userService.findAll({
+      page,
+      limit,
+      skip,
+    });
 
-        return res.json({
-            data: data.map((user) => User.toPublicObject(user)),
-            page: parseInt(page),
-            limit,
-            totalPages,
-        })
-    } catch (error) {
-        return error
-    }
+    return res.json({
+      data: data.map((user) => User.toPublicObject(user)),
+      page: parseInt(page),
+      limit,
+      totalPages,
+    });
+  } catch (error) {
+    return error;
+  }
 }
 
 async function findOne(req, res) {
-    const { id } = req.params
+  const { id } = req.params;
 
-    try {
-        const user = await userService.findOne({ id })
+  try {
+    const user = await userService.findOne({ id });
 
-        if (!user) {
-            throw new NotFoundException('User not found')
-        }
-
-        return res.json({
-            user: User.toPublicObject(user),
-        })
-    } catch (error) {
-        return res
-            .status(error.status || statusCode.INTERNAL_SERVER_ERROR)
-            .json({
-                status: error.status,
-                message: error.message || 'Error retrieving user',
-            })
+    if (!user) {
+      res.status(404).json({
+        status: 404,
+        message: "User not found",
+      });
+      throw new NotFoundException("User not found");
     }
+
+    return res.json({
+      user: User.toPublicObject(user),
+    });
+  } catch (error) {
+    return res.status(error.status || statusCode.INTERNAL_SERVER_ERROR).json({
+      status: error.status,
+      message: error.message || "Error retrieving user",
+    });
+  }
 }
 
 async function update(req, res) {
-    const { id } = req.params
+  const { id } = req.params;
 
-    const body = req.body
+  const body = req.body;
 
-    req.body.updatedAt = new Date()
+  req.body.updatedAt = new Date();
 
-    try {
-        userService.update(id, body)
-        return res.json({
-            status: 200,
-            message: 'User updated',
-        })
-    } catch (error) {
-        return res
-            .status(error.status || statusCode.INTERNAL_SERVER_ERROR)
-            .json({
-                status: error.status || statusCode.INTERNAL_SERVER_ERROR,
-                message: error.message || 'Error updating user',
-            })
-    }
+  try {
+    userService.update(id, body);
+    return res.json({
+      status: 200,
+      message: "User updated",
+    });
+  } catch (error) {
+    return res.status(error.status || statusCode.INTERNAL_SERVER_ERROR).json({
+      status: error.status || statusCode.INTERNAL_SERVER_ERROR,
+      message: error.message || "Error updating user",
+    });
+  }
 }
 
 async function remove(req, res) {
-    const { id } = req.params
+  const { id } = req.params;
 
-    try {
-        const user = await userService.remove(id)
+  try {
+    const user = await userService.remove(id);
 
-        return res.json({
-            message: 'User deleted',
-            user,
-        })
-    } catch (error) {
-        handleError(res, error)
-    }
+    return res.json({
+      message: "User deleted",
+      user,
+    });
+  } catch (error) {
+    handleError(res, error);
+  }
 }
 
 async function restore(req, res) {
-    const { id } = req.params
+  const { id } = req.params;
 
-    try {
-        const user = await userService.restore(id)
+  try {
+    const user = await userService.restore(id);
 
-        return res.json({
-            message: 'User restored',
-            user,
-        })
-    } catch (error) {
-        handleError(res, error)
-    }
+    return res.json({
+      message: "User restored",
+      user,
+    });
+  } catch (error) {
+    handleError(res, error);
+  }
 }
-export { findAll, findOne, create, update, remove, restore }
+export { findAll, findOne, create, update, remove, restore };

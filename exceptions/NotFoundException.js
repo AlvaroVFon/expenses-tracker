@@ -1,5 +1,5 @@
-import HttpException from './HttpException.js'
-import { exceptions, statusCode } from '../utils/enums/exceptions.js'
+import HttpException from "./HttpException.js";
+import { exceptions, statusCode } from "../utils/enums/exceptions.js";
 
 /**
  * This class extends the HttpException class and is used to throw
@@ -9,9 +9,9 @@ import { exceptions, statusCode } from '../utils/enums/exceptions.js'
  * @param {string} message - The error message
  */
 class NotFoundException extends HttpException {
-    constructor(message = exceptions.NOT_FOUND) {
-        super(statusCode.NOT_FOUND, message)
-    }
+  constructor(message = exceptions.NOT_FOUND) {
+    super(statusCode.NOT_FOUND, message);
+  }
 }
 
-export default NotFoundException
+export default NotFoundException;

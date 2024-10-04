@@ -1,6 +1,6 @@
-import HttpException from './HttpException.js'
-import { exceptions } from '../utils/enums/exceptions.js'
-import { statusCode } from '../utils/enums/exceptions.js'
+import HttpException from "./HttpException.js";
+import { exceptions } from "../utils/enums/exceptions.js";
+import { statusCode } from "../utils/enums/exceptions.js";
 
 /**
  * UnauthorizedException
@@ -9,9 +9,9 @@ import { statusCode } from '../utils/enums/exceptions.js'
  */
 
 class UnauthorizedException extends HttpException {
-    constructor(message = exceptions.UNAUTHORIZED) {
-        super(statusCode.UNAUTHORIZED, message)
-    }
+  constructor(message = exceptions.UNAUTHORIZED) {
+    super(statusCode.UNAUTHORIZED, message);
+  }
 }
 
-export default UnauthorizedException
+export default UnauthorizedException;

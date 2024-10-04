@@ -1,8 +1,8 @@
-import { Router } from 'express'
-import { getUserFromToken, login } from '../controllers/auth.controller.js'
+import { Router } from "express";
+import { getUserFromToken, login } from "../controllers/auth.controller.js";
 
-const router = Router()
+const router = Router();
 
-router.post('/auth/login', login).get('/auth/me', getUserFromToken)
+router.post("/auth/login", login).get("/auth/me", getUserFromToken);
 
-export { router as AuthRouter }
+export { router as AuthRouter };
