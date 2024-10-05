@@ -1,5 +1,6 @@
 import { seedUsers } from './users.seed.js'
 import { seedRoles } from './roles.seed.js'
+import { seedCategories } from './categories.seed.js'
 import { databaseConnection } from '../../database/config.js'
 
 /**
@@ -22,6 +23,6 @@ async function seed(databaseConnection, seeders) {
   }
 }
 
-seed(databaseConnection, [seedRoles, seedUsers])
+seed(databaseConnection, [seedRoles, seedUsers, seedCategories])
 
 export { seed }

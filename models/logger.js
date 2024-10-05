@@ -29,24 +29,24 @@ const loggerSchema = new Schema(
           stack,
         })
       },
-      error(message, stack = null) {
-        return this.create({
+      async error(message, stack = null) {
+        return await this.create({
           message,
           level: logLevels.ERROR,
           timestamp: new Date(),
           stack,
         })
       },
-      warn(message, stack = null) {
-        return this.create({
+      async warn(message, stack = null) {
+        return await this.create({
           message,
           level: logLevels.WARN,
           timestamp: new Date(),
           stack,
         })
       },
-      debug(message, stack = null) {
-        return this.create({
+      async debug(message, stack = null) {
+        return await this.create({
           message,
           level: logLevels.DEBUG,
           timestamp: new Date(),
