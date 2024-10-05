@@ -1,7 +1,6 @@
 import { Schema, model } from 'mongoose'
 import { redis } from '../database/redis.js'
 import { Logger } from './logger.js'
-import { rolesEnum } from '../utils/enums/roles.js'
 
 const userSchema = new Schema(
   {
@@ -33,8 +32,7 @@ const userSchema = new Schema(
       default: null,
     },
     role: {
-      type: String,
-      enum: rolesEnum,
+      type: Schema.Types.ObjectId,
       ref: 'Role',
       required: true,
     },
@@ -46,7 +44,7 @@ const userSchema = new Schema(
           id: user._id,
           name: user.name,
           email: user.email,
-          role: user.role,
+          role: user.role.name,
         }
       },
     },

@@ -5,19 +5,22 @@ import { ObjectId } from 'mongodb'
 import { redis } from '../database/redis.js'
 import { Logger } from '../models/logger.js'
 import NotFoundException from '../exceptions/NotFoundException.js'
+import { Role } from '../models/role.js'
 
 export class UserService {
   async create({ name, email, password, role }) {
+    const roleId = await Role.findOne({ name: role }).select('_id')
+
     const user = new User({
       name,
       email,
       password: await hashPassword(password),
-      role,
+      role: roleId,
     })
 
     try {
       await user.save()
-      return user
+      return user.populate('role')
     } catch (error) {
       Logger.error(error.message, error.stack)
       throw error
@@ -29,7 +32,7 @@ export class UserService {
 
     const totalPages = Math.ceil(totalUsers / limit) === 0 ? 1 : Math.ceil(totalUsers / limit)
 
-    const users = await User.find().limit(parseInt(limit)).skip(skip)
+    const users = await User.find().limit(parseInt(limit)).skip(skip).populate('role')
 
     return {
       data: users,
