@@ -88,6 +88,17 @@ export class UserService {
       throw NotFoundException('User not found')
     }
   }
+
+  async addExpense(userId, expenseId) {
+    console.log(userId, expenseId)
+    const user = await User.findByIdAndUpdate(userId, { $push: { expenses: expenseId } })
+
+    if (!user) {
+      throw new NotFoundException('User not found')
+    }
+
+    return user
+  }
 }
 
 export const userService = new UserService()

@@ -36,6 +36,11 @@ const userSchema = new Schema(
       ref: 'Role',
       required: true,
     },
+    expenses: {
+      type: [Schema.Types.ObjectId],
+      ref: 'Expense',
+      default: [],
+    },
   },
   {
     statics: {
