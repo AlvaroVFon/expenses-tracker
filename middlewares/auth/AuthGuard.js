@@ -1,6 +1,7 @@
 import { authService } from '../../services/auth.service.js'
 import { handleError } from '../../helpers/handleError.js'
 import UnauthorizedException from '../../exceptions/UnauthorizedException.js'
+import { userService } from '../../services/users.service.js'
 
 /**
  * Check if the request has a valid token
@@ -17,7 +18,11 @@ async function authGuard(req, res, next) {
 
     const token = req.headers['authorization'].split(' ')[1]
 
-    req.user = await authService.verifyToken(token)
+    const tokenUser = await authService.verifyToken(token)
+
+    const user = await userService.findOnebyEmail(tokenUser.email)
+
+    req.user = user
 
     next()
   } catch (error) {
