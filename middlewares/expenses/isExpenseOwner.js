@@ -1,15 +1,17 @@
-import { handleError } from '../../helpers/handleError'
-import { Expense } from '../../models/expense'
+import { handleError } from '../../helpers/handleError.js'
+import { Expense } from '../../models/expense.js'
+import { exceptions, statusCode } from '../../utils/enums/exceptions.js'
 
+//TODO: Implement isExpenseOwner middleware and test it
 async function isExpenseOwner(req, res, next) {
   try {
-    const { user } = req.body
+    const { user } = req
 
     const expenseUser = Expense.findById(req.params.id).user
 
     if (user !== expenseUser) {
-      return res.status(403).json({
-        message: 'You are not the owner of this expense',
+      return res.status(statusCode.UNAUTHORIZED).json({
+        message: exceptions.UNAUTHORIZED,
       })
     }
 

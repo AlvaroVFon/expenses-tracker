@@ -1,4 +1,6 @@
 import { handleError } from '../helpers/handleError.js'
+import { Expense } from '../models/expense.js'
+import { categoriesService } from '../services/categories.service.js'
 import { expensesService } from '../services/expenses.service.js'
 
 async function create(req, res) {
@@ -8,8 +10,6 @@ async function create(req, res) {
     expense.user = req.user._id
 
     const newExpense = await expensesService.create(expense)
-
-    console.log(newExpense)
 
     return res.status(201).json({
       expense: newExpense,
@@ -36,4 +36,27 @@ async function findAll(req, res) {
   }
 }
 
-export { create, findAll }
+async function findAllByCategory(req, res) {
+  try {
+    const { user, pagination } = req
+    const { category } = req.params
+
+    const categoryId = await categoriesService.findOneIdByName({ name: category })
+    const { expenses, totalPages, page, perPage } = await expensesService.findAllByCategory(
+      user._id,
+      categoryId,
+      pagination,
+    )
+
+    return res.status(200).json({
+      expenses: expenses.map((expense) => Expense.toPublicObject(expense)),
+      page,
+      totalPages,
+      perPage,
+    })
+  } catch (error) {
+    handleError(res, error)
+  }
+}
+
+export { create, findAll, findAllByCategory }

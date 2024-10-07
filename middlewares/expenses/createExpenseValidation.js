@@ -7,7 +7,6 @@ async function createExpenseValidation(req, res, next) {
     const { error } = expenseSchema.validate(req.body)
 
     if (error) {
-      console.log(error)
       handleError(res, {
         status: statusCode.BAD_REQUEST,
         message: error.message,

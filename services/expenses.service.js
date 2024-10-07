@@ -51,7 +51,7 @@ class ExpensesService {
   async findAllByUser(userId, pagination) {
     const { page, limit, skip } = pagination
 
-    const total = await Expense.countDocuments().where('user').equals(userId)
+    const total = await Expense.countDocuments().where('user', userId)
 
     const totalPages = Math.ceil(total / limit) === 0 ? 1 : Math.ceil(total / limit)
 
@@ -59,8 +59,7 @@ class ExpensesService {
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 })
-      .where('user')
-      .equals(userId)
+      .where('user', userId)
       .populate([
         {
           path: 'category',
@@ -86,8 +85,36 @@ class ExpensesService {
     return Expense.toPublicObject(expense)
   }
 
-  async findOneByCategoryName(category) {
-    return await Expense.find({ category: category })
+  async findAllByCategory(userId, categoryId, pagination) {
+    const { page, limit, skip } = pagination
+
+    const total = await Expense.countDocuments().where('category', categoryId).where('user', userId)
+
+    const totalPages = Math.ceil(total / limit) === 0 ? 1 : Math.ceil(total / limit)
+
+    const expenses = await Expense.find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .where('category', categoryId)
+      .where('user', userId)
+      .populate([
+        {
+          path: 'category',
+          select: 'name',
+        },
+        {
+          path: 'user',
+          select: 'name email',
+        },
+      ])
+
+    return {
+      expenses,
+      page,
+      totalPages,
+      perPage: limit,
+    }
   }
 }
 

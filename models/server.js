@@ -38,7 +38,7 @@ class Server {
 
   routes() {
     this.app.use(router)
-    this.app.use(AuthRouter)
+    this.app.use('/auth', AuthRouter)
     this.app.use(authGuard)
     this.app.use('/users', userRouter)
     this.app.use('/roles', rolesRouter)

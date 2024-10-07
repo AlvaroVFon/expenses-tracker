@@ -90,7 +90,6 @@ export class UserService {
   }
 
   async addExpense(userId, expenseId) {
-    console.log(userId, expenseId)
     const user = await User.findByIdAndUpdate(userId, { $push: { expenses: expenseId } })
 
     if (!user) {
