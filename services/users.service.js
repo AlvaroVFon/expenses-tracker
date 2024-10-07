@@ -51,19 +51,19 @@ export class UserService {
       return JSON.parse(redisUser)
     }
 
-    const user = await User.findOne({ _id: id, deletedAt: null })
+    const user = await User.findOne({ _id: id, deletedAt: null }).populate('role')
 
     if (user) {
       redis.set(user._id.toString(), JSON.stringify(user), 'EX', 1800)
     }
 
-    return user
+    return user.populate('role')
   }
 
   async findOnebyEmail(email) {
     const user = User.findOne({
       email: email,
-    })
+    }).populate('role')
 
     return user
   }
