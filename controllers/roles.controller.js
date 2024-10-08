@@ -1,6 +1,6 @@
 import { roleService } from '../services/role.service.js'
-import { statusCode } from '../utils/enums/exceptions.js'
 import { handleError } from '../helpers/handleError.js'
+import { handleResponse } from '../helpers/handleResponse.js'
 
 async function create(req, res) {
   const { id, name } = req.body
@@ -10,15 +10,14 @@ async function create(req, res) {
 
     await role.save()
 
-    res.status(201).json({
-      message: 'Role created',
-      role,
+    handleResponse({
+      res,
+      data: role,
+      message: 'Role created successfully',
+      status: 201,
     })
   } catch (error) {
-    return res.status(error.status || statusCode.INTERNAL_SERVER_ERROR).json({
-      status: error.status || statusCode.INTERNAL_SERVER_ERROR,
-      message: error.message || 'Something went wrong',
-    })
+    handleError(res, error)
   }
 }
 
@@ -26,19 +25,16 @@ async function findAll(req, res) {
   const { page, limit, skip } = req.pagination
 
   try {
-    const { data, totalPages } = await roleService.findAll({ limit, skip })
+    const { roles, totalPages } = await roleService.findAll({ limit, skip })
 
-    res.json({
-      data: data,
-      page: parseInt(page),
-      limit,
-      totalPages,
+    handleResponse({
+      res,
+      data: { roles, page, totalPages, limit },
+      message: 'Roles found successfully',
+      status: 200,
     })
   } catch (error) {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).json({
-      message: 'Error retrieving roles',
-      error,
-    })
+    handleError(res, error)
   }
 }
 
@@ -54,12 +50,14 @@ async function findOne(req, res) {
       })
     }
 
-    res.json(role)
-  } catch (error) {
-    res.status(error.status || statusCode.INTERNAL_SERVER_ERROR).json({
-      status: error.status || statusCode.INTERNAL_SERVER_ERROR,
-      message: error.message || 'Error retrieving role',
+    handleResponse({
+      res,
+      data: role,
+      message: 'Role found successfully',
+      status: 200,
     })
+  } catch (error) {
+    handleError(res, error)
   }
 }
 
@@ -68,11 +66,13 @@ async function update(req, res) {
     const { id } = req.params
     const { name } = req.body
 
-    await roleService.update(id, name)
+    const updatedRole = await roleService.update(id, name)
 
-    res.json({
+    handleResponse({
+      res,
+      data: updatedRole,
+      message: 'Role updated successfully',
       status: 200,
-      message: 'Role updated',
     })
   } catch (error) {
     handleError(res, error)

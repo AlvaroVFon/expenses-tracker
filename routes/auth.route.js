@@ -3,6 +3,6 @@ import { getUserFromToken, login } from '../controllers/auth.controller.js'
 
 const router = Router()
 
-router.post('/auth/login', login).get('/auth/me', getUserFromToken)
+router.post('/login', login).get('/me', getUserFromToken)
 
 export { router as AuthRouter }

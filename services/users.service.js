@@ -51,19 +51,19 @@ export class UserService {
       return JSON.parse(redisUser)
     }
 
-    const user = await User.findOne({ _id: id, deletedAt: null })
+    const user = await User.findOne({ _id: id, deletedAt: null }).populate('role')
 
     if (user) {
-      redis.set(user._id.toString(), JSON.stringify(user), 'EX', 1800)
+      redis.set(user._id.toString(), JSON.stringify(user), 'EX', process.env.REDIS_TTL)
     }
 
-    return user
+    return user.populate('role')
   }
 
   async findOnebyEmail(email) {
     const user = User.findOne({
       email: email,
-    })
+    }).populate(['role'])
 
     return user
   }
@@ -83,10 +83,22 @@ export class UserService {
   }
 
   async restore(id) {
-    const user = await User.findByIdAndUpdate(id, { deletedAt: null })
+    const user = await User.findByIdAndUpdate(id, { deletedAt: null }).where('deletedAt').ne(null)
     if (!user) {
-      throw NotFoundException('User not found')
+      throw new NotFoundException('User not found')
     }
+
+    return user
+  }
+
+  async addExpense(userId, expenseId) {
+    const user = await User.findByIdAndUpdate(userId, { $push: { expenses: expenseId } })
+
+    if (!user) {
+      throw new NotFoundException('User not found')
+    }
+
+    return user
   }
 }
 

@@ -2,25 +2,30 @@ import { Category } from '../../models/category.js'
 import { categoriesEnum } from '../../utils/enums/categories.js'
 
 async function seedCategories() {
-  await clearCategories()
+  try {
+    await clearCategories()
 
-  const categories = Object.values(categoriesEnum).map((name) => ({
-    name,
-    description: `Description of ${name}`,
-  }))
+    const categories = Object.values(categoriesEnum).map((name) => ({
+      name,
+      description: `Description of ${name}`,
+    }))
 
-  const promises = categories.map((category) => {
-    Category.create(category)
-    console.log(`Category ${category.name} created`)
-  })
+    const promises = categories.map(async (category) => {
+      await Category.create(category)
+      console.log(`Category ${category.name} created`)
+    })
 
-  await Promise.all(promises)
+    await Promise.all(promises)
 
-  return categories
+    return categories
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 async function clearCategories() {
   await Category.collection.drop()
+  console.log('Categories deleted')
 }
 
 export { seedCategories }

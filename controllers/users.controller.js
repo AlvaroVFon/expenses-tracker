@@ -1,8 +1,8 @@
 import { User } from '../models/user.js'
 import NotFoundException from '../exceptions/NotFoundException.js'
 import { userService } from '../services/users.service.js'
-import { statusCode } from '../utils/enums/exceptions.js'
 import { handleError } from '../helpers/handleError.js'
+import { handleResponse } from '../helpers/handleResponse.js'
 
 async function create(req, res) {
   const { name, email, password, role } = req.body
@@ -10,9 +10,11 @@ async function create(req, res) {
   try {
     const user = await userService.create({ name, email, password, role })
 
-    return res.status(201).json({
-      message: 'User created',
-      user: User.toPublicObject(user),
+    handleResponse({
+      res,
+      data: User.toPublicObject(user),
+      message: 'User created successfully',
+      status: 201,
     })
   } catch (error) {
     return error
@@ -31,11 +33,11 @@ async function findAll(req, res) {
       skip,
     })
 
-    return res.json({
-      data: data.map((user) => User.toPublicObject(user)),
-      page: parseInt(page),
-      limit,
-      totalPages,
+    handleResponse({
+      res,
+      data: { users: data.map((user) => User.toPublicObject(user)), page, totalPages, limit },
+      message: 'Users found successfully',
+      status: 200,
     })
   } catch (error) {
     return error
@@ -49,10 +51,6 @@ async function findOne(req, res) {
     const user = await userService.findOne({ id })
 
     if (!user) {
-      res.status(404).json({
-        status: 404,
-        message: 'User not found',
-      })
       throw new NotFoundException('User not found')
     }
 
@@ -60,10 +58,7 @@ async function findOne(req, res) {
       user: User.toPublicObject(user),
     })
   } catch (error) {
-    return res.status(error.status || statusCode.INTERNAL_SERVER_ERROR).json({
-      status: error.status,
-      message: error.message || 'Error retrieving user',
-    })
+    handleError(res, error)
   }
 }
 
@@ -75,16 +70,15 @@ async function update(req, res) {
   req.body.updatedAt = new Date()
 
   try {
-    userService.update(id, body)
-    return res.json({
+    const updatedUser = await userService.update(id, body)
+    handleResponse({
+      res,
+      data: User.toPublicObject(updatedUser),
+      message: 'User updated successfully',
       status: 200,
-      message: 'User updated',
     })
   } catch (error) {
-    return res.status(error.status || statusCode.INTERNAL_SERVER_ERROR).json({
-      status: error.status || statusCode.INTERNAL_SERVER_ERROR,
-      message: error.message || 'Error updating user',
-    })
+    handleError(res, error)
   }
 }
 
@@ -94,9 +88,11 @@ async function remove(req, res) {
   try {
     const user = await userService.remove(id)
 
-    return res.json({
-      message: 'User deleted',
-      user,
+    handleResponse({
+      res,
+      data: User.toPublicObject(user),
+      message: 'User removed successfully',
+      status: 200,
     })
   } catch (error) {
     handleError(res, error)
@@ -109,9 +105,13 @@ async function restore(req, res) {
   try {
     const user = await userService.restore(id)
 
-    return res.json({
-      message: 'User restored',
-      user,
+    console.log(user)
+
+    handleResponse({
+      res,
+      data: User.toPublicObject(user),
+      message: 'User restored successfully',
+      status: 200,
     })
   } catch (error) {
     handleError(res, error)

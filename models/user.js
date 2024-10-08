@@ -36,6 +36,11 @@ const userSchema = new Schema(
       ref: 'Role',
       required: true,
     },
+    expenses: {
+      type: [Schema.Types.ObjectId],
+      ref: 'Expense',
+      default: [],
+    },
   },
   {
     statics: {
@@ -56,11 +61,11 @@ userSchema.post('save', function (doc) {
 })
 
 userSchema.post('save', async function (doc) {
-  await redis.set(doc._id.toString(), JSON.stringify(doc), 'EX', 1800)
+  await redis.set(doc._id.toString(), JSON.stringify(doc), 'EX', process.env.REDIS_TTL)
 })
 
 userSchema.post('updateOne', async function (doc) {
-  await redis.set(doc._id.toString(), JSON.stringify(doc), 'EX', 1800)
+  await redis.set(doc._id.toString(), JSON.stringify(doc), 'EX', process.env.REDIS_TTL)
 })
 
 userSchema.post('deleteOne', async function (doc) {

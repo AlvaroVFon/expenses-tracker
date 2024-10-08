@@ -14,7 +14,9 @@ async function seed(databaseConnection, seeders) {
   try {
     await databaseConnection()
 
-    await Promise.all(seeders.map((seeder) => seeder()))
+    for (const seeder of seeders) {
+      await seeder()
+    }
 
     process.exit(0)
   } catch (error) {

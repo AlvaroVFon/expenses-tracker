@@ -17,7 +17,7 @@ async function createCategoryValidation(req, res, next) {
 
     const { name } = req.body
 
-    const categoryExist = await categoriesService.findOneByName({ name })
+    const categoryExist = await categoriesService.findOneIdByName({ name })
 
     if (categoryExist) {
       throw new ConflictException('Category already exists')

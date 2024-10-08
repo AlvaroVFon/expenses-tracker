@@ -6,7 +6,7 @@ const categorySchema = new Schema(
     name: {
       type: String,
       required: true,
-      enum: categoriesEnum,
+      enum: Object.values(categoriesEnum),
       unique: true,
     },
 

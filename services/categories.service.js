@@ -4,7 +4,6 @@ class CategoriesService {
   async create({ name, description, image = null }) {
     const category = new Category({ name, description, image })
 
-    console.log(category)
     await category.save()
     return category
   }
@@ -31,8 +30,8 @@ class CategoriesService {
     return await Category.findById(id)
   }
 
-  async findOneByName({ name }) {
-    return await Category.findOne({ name })
+  async findOneIdByName({ name }) {
+    return await Category.findOne({ name }).select('_id')
   }
 }
 
