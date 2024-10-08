@@ -63,7 +63,7 @@ export class UserService {
   async findOnebyEmail(email) {
     const user = User.findOne({
       email: email,
-    }).populate('role')
+    }).populate(['role'])
 
     return user
   }

@@ -1,3 +1,4 @@
+import NotFoundException from '../exceptions/NotFoundException.js'
 import { handleError } from '../helpers/handleError.js'
 import { handleResponse } from '../helpers/handleResponse.js'
 import { Expense } from '../models/expense.js'
@@ -26,8 +27,9 @@ async function create(req, res) {
 async function findAll(req, res) {
   try {
     const pagination = req.pagination
+    const user = req.user
 
-    const { expenses, page, totalPages, perPage } = await expensesService.findAllByUser(req.user._id, pagination)
+    const { expenses, page, totalPages, perPage } = await expensesService.findAllByUser(user._id, pagination)
 
     handleResponse({
       res,
@@ -100,6 +102,10 @@ async function remove(req, res) {
 
     const removedExpense = await expensesService.remove(id)
 
+    if (!removedExpense) {
+      throw new NotFoundException('Expense not found')
+    }
+
     handleResponse({
       res,
       data: Expense.toPublicObject(removedExpense),
@@ -111,4 +117,25 @@ async function remove(req, res) {
   }
 }
 
-export { create, findAll, findAllByCategory, findOne, update, remove }
+async function restore(req, res) {
+  try {
+    const { id } = req.params
+
+    const restoredExpense = await expensesService.restore(id)
+
+    if (!restoredExpense) {
+      throw new NotFoundException('Expense not found')
+    }
+
+    handleResponse({
+      res,
+      data: Expense.toPublicObject(restoredExpense),
+      message: 'Expense restored successfully',
+      status: 200,
+    })
+  } catch (error) {
+    handleError(res, error)
+  }
+}
+
+export { create, findAll, findAllByCategory, findOne, update, remove, restore }

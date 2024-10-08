@@ -122,7 +122,11 @@ class ExpensesService {
   }
 
   async remove(id) {
-    return await Expense.findOneAndUpdate({ _id: id }, { deletedAt: new Date() })
+    return await Expense.findOneAndUpdate({ _id: id }, { deletedAt: new Date() }).where('deletedAt', null)
+  }
+
+  async restore(id) {
+    return await Expense.findByIdAndUpdate(id, { deletedAt: null }).where('deletedAt').ne(null)
   }
 }
 
