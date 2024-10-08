@@ -42,7 +42,7 @@ async function findAllByCategory(req, res) {
     const { category } = req.params
 
     const categoryId = await categoriesService.findOneIdByName({ name: category })
-    const { expenses, totalPages, page, perPage } = await expensesService.findAllByCategory(
+    const { expenses, totalPages, page, perPage } = await expensesService.findAllByCategoryAndUser(
       user._id,
       categoryId,
       pagination,
@@ -59,4 +59,21 @@ async function findAllByCategory(req, res) {
   }
 }
 
-export { create, findAll, findAllByCategory }
+async function update(req, res) {
+  try {
+    const { id } = req.params
+
+    const expense = req.body
+
+    const updatedExpense = await expensesService.update({ id, expense })
+
+    return res.status(200).json({
+      message: 'Expense updated successfully',
+      expense: Expense.toPublicObject(updatedExpense),
+    })
+  } catch (error) {
+    handleError(res, error)
+  }
+}
+
+export { create, findAll, findAllByCategory, update }

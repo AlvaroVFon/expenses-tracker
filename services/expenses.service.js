@@ -4,7 +4,7 @@ import { userService } from './users.service.js'
 
 class ExpensesService {
   async create(expense) {
-    const categoryObjectId = await categoriesService.findOneByName({ name: expense.category })
+    const categoryObjectId = await categoriesService.findOneIdByName({ name: expense.category })
 
     const newExpense = {
       ...expense,
@@ -85,7 +85,7 @@ class ExpensesService {
     return Expense.toPublicObject(expense)
   }
 
-  async findAllByCategory(userId, categoryId, pagination) {
+  async findAllByCategoryAndUser(userId, categoryId, pagination) {
     const { page, limit, skip } = pagination
 
     const total = await Expense.countDocuments().where('category', categoryId).where('user', userId)
@@ -115,6 +115,11 @@ class ExpensesService {
       totalPages,
       perPage: limit,
     }
+  }
+
+  async update({ id, expense }) {
+    console.log('------>Service', id)
+    return await Expense.findByIdAndUpdate(id, expense)
   }
 }
 

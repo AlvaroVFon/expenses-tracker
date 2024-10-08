@@ -54,7 +54,7 @@ export class UserService {
     const user = await User.findOne({ _id: id, deletedAt: null }).populate('role')
 
     if (user) {
-      redis.set(user._id.toString(), JSON.stringify(user), 'EX', 1800)
+      redis.set(user._id.toString(), JSON.stringify(user), 'EX', process.env.REDIS_TTL)
     }
 
     return user.populate('role')
