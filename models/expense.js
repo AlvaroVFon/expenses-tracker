@@ -61,7 +61,7 @@ const expenseSchema = new Schema(
           description: expense.description,
           amount: expense.amount,
           date: expense.date,
-          category: expense.category.name,
+          category: expense.category,
           paymentMethod: expense.paymentMethod,
           user: expense.user,
           isRecurring: expense.isRecurring,

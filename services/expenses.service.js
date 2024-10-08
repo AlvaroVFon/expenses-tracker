@@ -15,7 +15,7 @@ class ExpensesService {
 
     await userService.addExpense(expense.user, createdExpense._id)
 
-    return Expense.toPublicObject(newExpense)
+    return createdExpense
   }
 
   async findAll(pagination) {
