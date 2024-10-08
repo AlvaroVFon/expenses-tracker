@@ -118,7 +118,6 @@ class ExpensesService {
   }
 
   async update({ id, expense }) {
-    console.log('------>Service', id)
     return await Expense.findByIdAndUpdate(id, expense)
   }
 }

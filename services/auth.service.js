@@ -7,9 +7,6 @@ import UnauthorizedException from '../exceptions/UnauthorizedException.js'
 
 class AuthService {
   async login(email, password) {
-    console.log('AuthService -> login -> email', email)
-    console.log('AuthService -> login -> password', password)
-
     const validUser = await this._validateUser(email, password)
 
     if (validUser) {
