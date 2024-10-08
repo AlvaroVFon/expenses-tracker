@@ -39,6 +39,7 @@ class ExpensesService {
           select: 'name email',
         },
       ])
+      .where('deletedAt', null)
 
     return {
       expenses,
@@ -60,6 +61,7 @@ class ExpensesService {
       .limit(limit)
       .sort({ createdAt: -1 })
       .where('user', userId)
+      .where('deletedAt', null)
       .populate([
         {
           path: 'category',
@@ -98,6 +100,7 @@ class ExpensesService {
       .sort({ createdAt: -1 })
       .where('category', categoryId)
       .where('user', userId)
+      .where('deletedAt', null)
       .populate([
         {
           path: 'category',
