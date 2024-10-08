@@ -120,6 +120,10 @@ class ExpensesService {
   async update({ id, expense }) {
     return await Expense.findByIdAndUpdate(id, expense)
   }
+
+  async remove(id) {
+    return await Expense.findOneAndUpdate({ _id: id }, { deletedAt: new Date() })
+  }
 }
 
 export const expensesService = new ExpensesService()

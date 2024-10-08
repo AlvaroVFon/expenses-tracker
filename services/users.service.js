@@ -83,10 +83,12 @@ export class UserService {
   }
 
   async restore(id) {
-    const user = await User.findByIdAndUpdate(id, { deletedAt: null })
+    const user = await User.findByIdAndUpdate(id, { deletedAt: null }).where('deletedAt').ne(null)
     if (!user) {
-      throw NotFoundException('User not found')
+      throw new NotFoundException('User not found')
     }
+
+    return user
   }
 
   async addExpense(userId, expenseId) {

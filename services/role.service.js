@@ -25,7 +25,7 @@ export class RoleService {
     const roles = await Role.find().limit(parseInt(limit)).skip(skip)
 
     return {
-      data: roles,
+      roles,
       totalPages,
     }
   }

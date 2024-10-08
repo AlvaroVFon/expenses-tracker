@@ -1,4 +1,5 @@
 import { handleError } from '../helpers/handleError.js'
+import { handleResponse } from '../helpers/handleResponse.js'
 import { Expense } from '../models/expense.js'
 import { categoriesService } from '../services/categories.service.js'
 import { expensesService } from '../services/expenses.service.js'
@@ -11,8 +12,11 @@ async function create(req, res) {
 
     const newExpense = await expensesService.create(expense)
 
-    return res.status(201).json({
-      expense: newExpense,
+    handleResponse({
+      res,
+      data: Expense.toPublicObject(newExpense),
+      message: 'Expense created successfully',
+      status: 201,
     })
   } catch (error) {
     handleError(res, error)
@@ -25,11 +29,11 @@ async function findAll(req, res) {
 
     const { expenses, page, totalPages, perPage } = await expensesService.findAllByUser(req.user._id, pagination)
 
-    return res.status(200).json({
-      expenses,
-      page,
-      totalPages,
-      perPage,
+    handleResponse({
+      res,
+      data: { expenses: expenses.map((expense) => Expense.toPublicObject(expense)), page, totalPages, perPage },
+      message: 'Expenses found successfully',
+      status: 200,
     })
   } catch (error) {
     handleError(res, error)
@@ -48,14 +52,26 @@ async function findAllByCategory(req, res) {
       pagination,
     )
 
-    return res.status(200).json({
-      expenses: expenses.map((expense) => Expense.toPublicObject(expense)),
-      page,
-      totalPages,
-      perPage,
+    handleResponse({
+      res,
+      data: { expenses: expenses.map((expense) => Expense.toPublicObject(expense)), page, totalPages, perPage },
+      message: 'Expenses found successfully',
+      status: 200,
     })
   } catch (error) {
     handleError(res, error)
+  }
+}
+
+async function findOne(req, res) {
+  try {
+    const { id } = req.params
+
+    const expense = await expensesService.findOne(id)
+
+    handleResponse({ res, data: expense, message: 'Expense found successfully', status: 200 })
+  } catch (error) {
+    handleResponse(res, error)
   }
 }
 
@@ -67,13 +83,32 @@ async function update(req, res) {
 
     const updatedExpense = await expensesService.update({ id, expense })
 
-    return res.status(200).json({
+    handleResponse({
+      res,
+      data: Expense.toPublicObject(updatedExpense),
       message: 'Expense updated successfully',
-      expense: Expense.toPublicObject(updatedExpense),
+      status: 200,
     })
   } catch (error) {
     handleError(res, error)
   }
 }
 
-export { create, findAll, findAllByCategory, update }
+async function remove(req, res) {
+  try {
+    const { id } = req.params
+
+    const removedExpense = await expensesService.remove(id)
+
+    handleResponse({
+      res,
+      data: Expense.toPublicObject(removedExpense),
+      message: 'Expense removed successfully',
+      status: 200,
+    })
+  } catch (error) {
+    handleError(res, error)
+  }
+}
+
+export { create, findAll, findAllByCategory, findOne, update, remove }
