@@ -42,7 +42,7 @@ class AuthService {
 
   async _generateToken(payload) {
     try {
-      return jsonwebtoken.sign(payload, process.env.JWT_SECRET, {
+      return jsonwebtoken.sign(payload._doc, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN,
       })
     } catch (error) {
