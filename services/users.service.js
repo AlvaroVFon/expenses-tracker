@@ -61,7 +61,10 @@ export class UserService {
   }
 
   async findOnebyEmail(email) {
-    const user = await User.findOneByEmail({ email })
+    const user = await User.findOne({
+      email: email,
+    }).populate(['role'])
+
     return user
   }
 
