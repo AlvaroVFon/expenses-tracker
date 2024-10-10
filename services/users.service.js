@@ -61,10 +61,11 @@ export class UserService {
   }
 
   async findOnebyEmail(email) {
-    const user = User.findOne({
+    const user = await User.findOne({
       email: email,
     }).populate(['role'])
 
+    console.log(user)
     return user
   }
 
