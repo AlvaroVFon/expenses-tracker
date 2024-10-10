@@ -105,8 +105,6 @@ async function restore(req, res) {
   try {
     const user = await userService.restore(id)
 
-    console.log(user)
-
     handleResponse({
       res,
       data: User.toPublicObject(user),

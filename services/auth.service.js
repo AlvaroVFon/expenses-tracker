@@ -8,8 +8,9 @@ import UnauthorizedException from '../exceptions/UnauthorizedException.js'
 class AuthService {
   async login(email, password) {
     const validUser = await this._validateUser(email, password)
+
     if (validUser) {
-      return await this._generateToken(validUser.toObject())
+      return await this._generateToken(validUser)
     }
     throw new BadRequestException('Invalid Credentials')
   }
@@ -17,14 +18,14 @@ class AuthService {
   async _validateUser(email, password) {
     const user = await userService.findOnebyEmail(email)
 
-    if (user.lockUntil > Date.now()) {
+    if (!user) {
+      throw new NotFoundException('User not found')
+    }
+
+    if (user.lockUntil && user.lockUntil > Date.now()) {
       throw new UnauthorizedException(
         `User is locked, try again in ${(user.lockUntil - Date.now()) / (1000 * 60)} minutes`,
       )
-    }
-
-    if (!user) {
-      throw new NotFoundException('User not found')
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password)
