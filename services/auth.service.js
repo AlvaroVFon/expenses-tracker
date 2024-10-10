@@ -31,12 +31,11 @@ class AuthService {
     const isValidPassword = await bcrypt.compare(password, user.password)
 
     if (isValidPassword) {
-      console.log('user', user)
-      this.unlockOrResetAttemps(user)
+      await this.resetLoginAttemps(user)
       return user
     }
 
-    this.incrementFailedLoginAttempts(user)
+    await this.incrementFailedLoginAttempts(user)
 
     throw new BadRequestException('Invalid Credentials')
   }
@@ -79,15 +78,12 @@ class AuthService {
     await user.save()
   }
 
-  async lockUser(user) {
+  lockUser(user) {
     user.lockUntil = Date.now() + parseInt(process.env.LOCK_TIME)
-    await user.save()
   }
 
-  async unlockOrResetAttemps(user) {
-    user.lockUntil = null
+  async resetLoginAttemps(user) {
     user.failedLoginAttempts = 0
-
     await user.save()
   }
 }
