@@ -31,6 +31,7 @@ class AuthService {
     const isValidPassword = await bcrypt.compare(password, user.password)
 
     if (isValidPassword) {
+      console.log('user', user)
       this.unlockOrResetAttemps(user)
       return user
     }
@@ -78,13 +79,16 @@ class AuthService {
     await user.save()
   }
 
-  lockUser(user) {
+  async lockUser(user) {
     user.lockUntil = Date.now() + parseInt(process.env.LOCK_TIME)
+    await user.save()
   }
 
-  unlockOrResetAttemps(user) {
+  async unlockOrResetAttemps(user) {
     user.lockUntil = null
     user.failedLoginAttempts = 0
+
+    await user.save()
   }
 }
 
