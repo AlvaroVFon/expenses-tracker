@@ -60,6 +60,9 @@ const userSchema = new Schema(
           role: user.role.name,
         }
       },
+      async findOneByEmail({ email }) {
+        return await this.findOne({ email }).where('deletedAt', null)
+      },
     },
   },
 )

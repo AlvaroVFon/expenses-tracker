@@ -65,7 +65,6 @@ export class UserService {
       email: email,
     }).populate(['role'])
 
-    console.log(user)
     return user
   }
 
